@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="mx-5">
+    <h3>{{constants.Table_view.title}}</h3>
+</div>
+
+<div class="container mt-5">
+    <div class="table-responsive">
+    {{ table_df.to_html(classes='view_table table table-striped table-bordered') | safe }}
+</div>
+</div>
+{% endblock %}

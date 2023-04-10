@@ -1,0 +1,15 @@
+<div class="row m-3 search-query">
+    <div class="form-group col-md-7 query-term-div">
+      <input class="form-control query-term" placeholder="Enter Keyword">
+      <datalist class="query-term-list">
+      </datalist>  
+      </div>
+      <div class="form-group col-md-4 query-type-div">
+      <select name="" id="" class="query-type form-select">
+        {% for column in constants.db.search_keys %}
+        <option value="{{ column }}"> {{ column }} </option>
+        {% endfor %}
+      </select>
+      </div>
+        <button class="col-md-1 btn btn-outline-warning d-inline remove-btn">Remove</button>
+  </div>

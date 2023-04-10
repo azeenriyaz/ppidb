@@ -1,0 +1,18 @@
+        <div class="mx-5">
+            <h3>{{ constants.Browse.title }}</h3>
+        </div>
+        {% for author in constants.db.author_table_dict %}
+        <div class="container mx-5 mt-5">
+            <div class="">
+                <h5 class="text-capitalize">{{ author }}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for table_obj in constants.db.author_table_dict[author] %}
+                {% for table_obj_key in table_obj %}
+                <li class="list-group-item"><a href="/view/{{ table_obj[table_obj_key] | safe }}" class="text-decoration-none" style="color:#351c75;">{{ table_obj_key }}</a></li>
+                {% endfor %}
+                {% endfor %}
+              </ul>
+        </div>
+
+        {% endfor %}

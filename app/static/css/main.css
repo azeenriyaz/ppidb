@@ -1,0 +1,26 @@
+.wrapper, body, html {
+    min-height: 100vh;
+    max-width: 100vw;
+}
+
+
+.header_inside_wrapper {
+    background-position-x: 90%;
+    background-repeat: no-repeat;
+    background-image: url(/static/img/ppi_landing.png);
+    background-size: contain;
+}
+
+.navbar {
+    min-width: 40px;
+}
+
+.content_container {
+    min-height: calc(100vh - 40px - (3 * 45px));
+}
+
+.view_table {
+    position: relative;
+    top:30px;
+    margin-bottom: 50px !important;
+}

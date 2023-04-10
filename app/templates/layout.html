@@ -1,0 +1,15 @@
+{% include "modules/head.html" %}
+  <body>
+    <div class="wrapper">
+    {% include "modules/navbar.html" %}
+    <section class="content_container py-5 border-bottom">
+      <div class="container-fluid px-5">
+    {% block content %}
+    {% endblock %}
+    </div>
+    </section>
+    {% include "modules/footer.html" %}
+    {% include "modules/scripts.html" %}
+  </div>
+  </body>
+</html>
