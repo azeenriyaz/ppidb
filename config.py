@@ -7,6 +7,10 @@ load_dotenv(path.join(basedir, '.env'))
 
 class Config:
     """Base config."""
+    SERVER_NAME = 'localhost:' + environ.get('PORT')
+    APPLICATION_ROOT = '/'
+    PREFERRED_URL_SCHEME = 'http'
+    SESSION_COOKIE_DOMAIN = 'localhost.localdomain'
     SECRET_KEY = environ.get('SECRET_KEY')
     RECAPTCHA_PUBLIC_KEY = environ.get("RECAPTCHA_PUBLIC_KEY")
     RECAPTCHA_PRIVATE_KEY = environ.get("RECAPTCHA_PRIVATE_KEY")

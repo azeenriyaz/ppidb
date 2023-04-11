@@ -74,6 +74,12 @@ template_script_tags = {
             },
             'DataTables' :  {
                 'src': 'https://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js',
-            }
+            },
+            'functions' : {
+                'src' : "{{ url_for('static',filename = 'js/functions.js') }}",
+            },
+            'script' : {
+                'src' : "{{ url_for('static',filename = 'js/script.js') }}",
+            },
         },
 }

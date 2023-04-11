@@ -1,5 +1,5 @@
 from wtforms import StringField, SubmitField
-from flask import render_template
+from flask import render_template, render_template_string
 import pandas as pd
 from flask_wtf import FlaskForm
 
@@ -12,6 +12,18 @@ class PPIUtils:
     @staticmethod
     def error_handler(e):
         return render_template("error.html", code=e)
+    def create_filter_dict(self, form_dict, request_args):
+        filter_dict = {}
+        for key in request_args.keys():
+            filter_dict[key] = request_args[key]
+        dict_copy = dict(filter_dict)
+        for key, value in form_dict.items():
+            if key in dict_copy and dict_copy[key] == value:
+                del dict_copy[key]
+        filter_dict = Database.create_query_dict(self,dict_copy)
+        
+        return filter_dict
+
 
 
 class PPIRoute:
@@ -50,8 +62,8 @@ class Database:
         self._build_author_table_dict()
         self.search_keys = list(pd.read_sql_table("non_redundant_data", con = self.engine))
 
-    def get_table_df(self, limit=100):
-        sql = f"select * from `{self.table_name}` limit {limit};"
+    def get_table_df(self, table, limit=100):
+        sql = f"select * from `{table}` limit {limit};"
         return pd.read_sql(sql, con=self.engine)
 
     def _build_author_table_dict(self):
@@ -133,3 +145,29 @@ class Database:
                 num = key.split('-')[2] # Extract the query type from the key
                 query_dict[value] = original_dict[f'search-col-{num}-query-term'] # Use f-string to get the query term value
         return query_dict
+    
+
+class PPIUI():
+    
+    def __init__(self):
+        pass
+
+    def generate_tag_templates(self, template_tags, app, url_for):
+        tag_templates = {}
+        with app.app_context():
+            for tag_name, tag_attrs in template_tags.items():
+                tag_templates[tag_name] = []
+                for attr_name, attr_values in tag_attrs.items():
+                    tag_template = "<{tag}"
+                    attr_template = " {attr}='{value}'"
+                    tag_template = tag_template.format(tag=tag_name)
+                    tag_template += attr_template.format(attr='name', value=attr_name)
+                    for attr_name, attr_value in attr_values.items():
+                        if '{{' in attr_value and '}}' in attr_value:
+                            # Render the Jinja2 template here
+                            attr_value = render_template_string(attr_value, url_for=url_for)
+                        tag_template += attr_template.format(attr=attr_name, value=attr_value)
+                    tag_template += "></{tag}>\n".format(tag=tag_name)
+                    tag_templates[tag_name].append(tag_template)
+                tag_templates[tag_name] = "".join(tag_templates[tag_name])
+        return tag_templates

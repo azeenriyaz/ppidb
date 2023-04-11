@@ -13,87 +13,89 @@ from .constants import PPIConstants
 PPIBP = Blueprint('PPIBP', __name__)
 
 constants = PPIConstants()
+routes = constants.routes
+ui_text = constants.ui_text
+util_fns = constants.utils_fns
 
-
-@PPIBP.get(constants.Home.url)
+@PPIBP.get(routes.Home.url)
 def home():
-    constants.tags_template = constants.generate_tag_templates(constants.template_tags, current_app, url_for)
-    constants.tags_html = "".join(constants.tags_template.values())
-    constants.tags_script_template = constants.generate_tag_templates(constants.template_script_tags, current_app, url_for)
-    constants.tags_script_html = "".join(constants.tags_script_template.values())
-    return render_template(constants.Home.template,
+    return render_template(routes.Home.template,
                             constants = constants,
-                            page_title = constants.Home.title)
+                            routes = routes,
+                            ui_text = ui_text,
+                            page_title = routes.Home.title)
 
-@PPIBP.get(constants.Browse.url)
+@PPIBP.get(routes.Browse.url)
 def browse():
-    return render_template(constants.Browse.template,
+    return render_template(routes.Browse.template,
                             constants = constants,
-                            page_title = constants.Browse.title)
+                            routes = routes,
+                            ui_text = ui_text,
+                            page_title = routes.Browse.title)
 
 
-@PPIBP.get(constants.Search.url)
+@PPIBP.get(routes.Search.url)
 def search():
-    return render_template(constants.Search.template,
+    return render_template(routes.Search.template,
                             constants = constants,
-                            page_title = constants.Search.title)
+                            routes = routes,
+                            ui_text = ui_text,
+                            page_title = routes.Search.title)
 
-@PPIBP.get(constants.About.url)
+@PPIBP.get(routes.About.url)
 def about():
-    return render_template(constants.About.template,
+    return render_template(routes.About.template,
                             constants = constants,
-                            page_title = constants.About.title)
+                            routes = routes,
+                            ui_text = ui_text,
+                            page_title = routes.About.title)
 
-@PPIBP.get(constants.Table_view.url)
+@PPIBP.get(routes.Table_view.url)
 def table_view(table):
     table_df = constants.db.get_table_df(table)
-    return render_template(constants.Table_view.template,
+    return render_template(routes.Table_view.template,
                             table_df = table_df,
                             constants = constants,
-                            page_title = constants.Table_view.title)
+                            routes = routes,
+                            ui_text = ui_text,
+                            page_title = routes.Table_view.title)
 
-@PPIBP.get(constants.Search_Result.url)
+@PPIBP.get(routes.Search_Result.url)
 def search_result(table_select, column, term):
     result_df = constants.db.search_term_in_table(table=table_select, column_initials=column, term=term)
     if session.get('filter_dict') == True:
         result_df = constants.db.filter_dataframe(result_df, session['filter_dict'])
         session.pop('filter_dict', default=None)
-    return render_template(constants.Table_view.template,
+    return render_template(routes.Table_view.template,
                             constants = constants,
+                            routes = routes,
+                            ui_text = ui_text,
                             table_df = result_df,
-                            page_title = constants.Table_view.title)
+                            page_title = routes.Table_view.title)
 
-@PPIBP.get(constants.download.url)
+@PPIBP.get(routes.download.url)
 def download(filename):
-    return send_from_directory(directory = constants.download.folder,
+    return send_from_directory(directory = routes.download.folder,
                                 path = filename,
                                 as_attachment=True)
 
-@PPIBP.get(constants.Search_Term.url)
+@PPIBP.get(routes.Search_Term.url)
 def searchCol():
     query_type = request.args['query_type']
     query_term = request.args['search']
     results = constants.db.searchCols(query_type, query_term)
     return results
 
-@PPIBP.get(constants.Get_Search_Term.url)
+@PPIBP.get(routes.Get_Search_Term.url)
 def get_search_term():
-    return render_template(constants.Get_Search_Term.template, constants = constants)
+    return render_template(routes.Get_Search_Term.template, constants = constants)
 
-@PPIBP.route(constants.Form_submit.url, methods = ["GET", "POST"])
+@PPIBP.get(routes.Form_submit.url)
 def handle_form():
     form_dict = {
         'table-select': request.args.get('table-select'),
         'search-col-1-query-type': request.args.get('search-col-1-query-type'),
         'search-col-1-query-term': request.args.get('search-col-1-query-term')
     }
-    filter_dict = {}
-    for key in request.args.keys():
-        filter_dict[key] = request.args[key]
-    dict_copy = dict(filter_dict)
-    for key, value in form_dict.items():
-        if key in dict_copy and dict_copy[key] == value:
-            del dict_copy[key]
-    filter_dict = constants.db.create_query_dict(dict_copy)
-    session['filter_dict'] = filter_dict
+    session['filter_dict'] = util_fns.create_filter_dict(form_dict, request.args)
     return redirect(url_for('PPIBP.search_result', table_select=form_dict['table-select'], column = form_dict['search-col-1-query-type'], term = form_dict['search-col-1-query-term']))
