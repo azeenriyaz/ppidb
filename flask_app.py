@@ -1,5 +1,5 @@
 from flask import Flask
-import config
+import config as config
 import sqlalchemy as sal
 
 class PPIApp():
