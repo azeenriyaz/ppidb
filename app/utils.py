@@ -2,6 +2,7 @@ from wtforms import StringField, SubmitField
 from flask import render_template, render_template_string
 import pandas as pd
 from flask_wtf import FlaskForm
+from uuid import uuid4
 
 class PPISearchForm(FlaskForm):
     search_term = StringField('Search')
@@ -23,11 +24,17 @@ class PPIUtils:
         filter_dict = Database.create_query_dict(self,dict_copy)
         
         return filter_dict
+    
+    def make_csv(self, df):
+        filename = uuid4()
+        file_url = f'downloads/{filename}'
+        df.to_csv(file_url + ".csv")
+        return file_url
 
 
 
 class PPIRoute:
-    def __init__(self, url, title, template, **kwargs):
+    def __init__(self, url, title, template):
         self.url = url
         self.title = title
         self.template = template
@@ -63,7 +70,10 @@ class Database:
         self.search_keys = list(pd.read_sql_table("non_redundant_data", con = self.engine))
 
     def get_table_df(self, table, limit=100):
-        sql = f"select * from `{table}` limit {limit};"
+        if limit == 'infinity':
+            sql = f"select * from `{table}`;"
+        else:
+            sql = f"select * from `{table}` limit {limit};"
         return pd.read_sql(sql, con=self.engine)
 
     def _build_author_table_dict(self):
@@ -97,7 +107,7 @@ class Database:
             })
         return vals_result
     
-    def search_term_in_table(self, table, column_initials, term):
+    def search_term_in_table(self, table, column_initials, term, limit = 1000):
         columns_query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tbl}' AND COLUMN_NAME LIKE %s"
         # read only the necessary data from the database using a SQL query
         data_frames = []
@@ -108,8 +118,11 @@ class Database:
             columns = pd.read_sql_query(columns_query.format(tbl=tbl, col=column_initials), self.engine, params=('%'+column_initials+'%',))['COLUMN_NAME'].tolist()
             try:
                 for col in columns:
-                    query = "SELECT * FROM {tbl} WHERE {col} LIKE %s LIMIT 1000"
-                    data = pd.read_sql_query(query.format(col=col, tbl=tbl), self.engine, params=('%'+term+'%',))
+                    if limit == 'infinity':
+                        query = "SELECT * FROM {tbl} WHERE {col} LIKE %s"
+                    else:
+                        query = "SELECT * FROM {tbl} WHERE {col} LIKE %s LIMIT {limit}"
+                    data = pd.read_sql_query(query.format(col=col, tbl=tbl, limit = limit), self.engine, params=('%'+term+'%',))
                     data_frames.append(data)
             except:
                 # if the column is not found in the table, skip the table

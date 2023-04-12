@@ -48,5 +48,50 @@ $(function() {
         if (($(this).height() / $(this).width()) > 3) {
             $(this).css('width',$(this).height());
         }
+    });
+
+    $('#download').on('click', function() {
+        $this = $(this);
+        $this.attr('disabled', 'True');
+        $this.text("Getting your file ready");
+        $this.removeClass('btn-outline-primary');
+        $this.addClass('btn-outline-warning');
+        let file_identifier = window.location.pathname;
+        file_identifier = file_identifier.split("/");
+        let result_type = "";
+        let table_select = "";
+        let column = "";
+        let term = "";
+        let table = "";
+
+        if (file_identifier.includes('search_result')) {
+            result_type = 'search';
+            table_select = file_identifier[3];
+            column = file_identifier[4];
+            term = file_identifier[5];
+        }
+
+        else {
+            table = file_identifier[2];
+        }
+        $.ajax({
+            url: "/generate_file/",
+            type: 'GET',
+            data : {
+                'result-type' : result_type,
+                'table-select' : table_select,
+                'column' : column,
+                'term' : term,
+                'table' : table
+            },
+            success: function(res) {
+                $this.removeAttr('disabled');
+                $this.text("Download Now");
+                $this.removeClass('btn-outline-warning');
+                $this.addClass('btn-outline-success');
+                $this.attr('href', "/" + res + ".csv");
+            }
+        });
     })
+
 })

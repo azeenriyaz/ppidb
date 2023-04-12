@@ -73,11 +73,10 @@ def search_result(table_select, column, term):
                             table_df = result_df,
                             page_title = routes.Table_view.title)
 
-@PPIBP.get(routes.download.url)
-def download(filename):
-    return send_from_directory(directory = routes.download.folder,
-                                path = filename,
-                                as_attachment=True)
+@PPIBP.route(routes.download.url)
+def download_file(filename):
+    directory = current_app.root_path + '/downloads'
+    return send_from_directory(directory, filename, as_attachment=True)
 
 @PPIBP.get(routes.Search_Term.url)
 def searchCol():
@@ -89,6 +88,25 @@ def searchCol():
 @PPIBP.get(routes.Get_Search_Term.url)
 def get_search_term():
     return render_template(routes.Get_Search_Term.template, constants = constants)
+
+@PPIBP.get(routes.GenerateFile.url)
+def generate_file():
+    result_type = request.args.get('result-type')
+    if result_type == 'search':
+        table_select = request.args.get('table-select')
+        column = request.args.get('column')
+        term = request.args.get('term')
+        result_df = constants.db.search_term_in_table(table=table_select, column_initials=column, term=term, limit = 'infinity')
+        if session.get('filter_dict') == True:
+            result_df = constants.db.filter_dataframe(result_df, session['filter_dict'])
+
+    else:
+        table_name = request.args.get('table')
+        result_df = constants.db.get_table_df(table_name, limit='infinity')
+
+    result_csv = util_fns.make_csv(result_df)
+    return result_csv
+
 
 @PPIBP.get(routes.Form_submit.url)
 def handle_form():
