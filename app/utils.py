@@ -112,7 +112,7 @@ class Database:
         # read only the necessary data from the database using a SQL query
         data_frames = []
         table_names_list = self.table_names
-        if table != 'all':
+        if table != 'All Tables':
             table_names_list = [table]
         for tbl in table_names_list:
             columns = pd.read_sql_query(columns_query.format(tbl=tbl, col=column_initials), self.engine, params=('%'+column_initials+'%',))['COLUMN_NAME'].tolist()
@@ -174,7 +174,7 @@ class PPIUI():
                     tag_template = "<{tag}"
                     attr_template = " {attr}='{value}'"
                     tag_template = tag_template.format(tag=tag_name)
-                    tag_template += attr_template.format(attr='name', value=attr_name)
+                    
                     for attr_name, attr_value in attr_values.items():
                         if '{{' in attr_value and '}}' in attr_value:
                             # Render the Jinja2 template here

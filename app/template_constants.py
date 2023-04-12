@@ -18,6 +18,7 @@ template_tags = {
                 'href' : "{{ url_for('static',filename = 'img/apple-touch-icon.png') }}",
             },
             'icon' : {
+                'rel' : 'shortcut icon',
                 'type': 'image/x-icon',
                 'href' : "{{ url_for('static',filename = 'img/favicon.ico') }}",
             },
