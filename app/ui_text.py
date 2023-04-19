@@ -13,6 +13,6 @@ class UIText():
     copyright = "Copyright"
     software_title = 'PPIDB'
     landing_title = 'Protein-Protein Interaction Database'
-    landing_message = 'These are specific physical or functional contacts between proteins that occur in any biological context as a result of molecular docking and occurrence. Such PPI networks can provide a complementary view to the biological pathways that enclose the corresponding proteins.',
+    landing_message = 'These are specific physical or functional contacts between proteins that occur in any biological context as a result of molecular docking and occurrence. Such PPI networks can provide a complementary view to the biological pathways that enclose the corresponding proteins.'
     select_database_msg = "Select Database"
 
