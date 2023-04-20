@@ -116,5 +116,4 @@ def handle_form():
         'search-col-1-query-term': request.args.get('search-col-1-query-term')
     }
     session['filter_dict'] = util_fns.create_filter_dict(form_dict, request.args)
-    print(form_dict)
     return redirect(url_for('PPIBP.search_result', table_select=form_dict['table-select'], column = form_dict['search-col-1-query-type'], term = form_dict['search-col-1-query-term']))
