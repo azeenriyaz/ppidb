@@ -7,7 +7,7 @@ load_dotenv(path.join(basedir, '.env'))
 
 class Config:
     """Base config."""
-    SERVER_NAME = 'localhost:' + environ.get('PORT')
+    SERVER_NAME = '127.0.0.1:' + environ.get('PORT')
     APPLICATION_ROOT = '/'
     PREFERRED_URL_SCHEME = 'http'
     SESSION_COOKIE_DOMAIN = 'localhost.localdomain'
@@ -19,6 +19,10 @@ class Config:
     TEMPLATES_FOLDER = basedir + environ.get('TEMPLATES_FOLDER')
     INSTANCE_PATH = environ.get('INSTANCE_PATH')
     SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
+    WORKERS = environ.get('GUNICORN_WORKERS')
+    TIMEOUT = environ.get('GUNICORN_TIMEOUT')
+    IP_ADDRESS = environ.get('IP_ADDRESS')
+    GUNICORN_BIND = SERVER_NAME
 
 class ProdConfig(Config):
     FLASK_ENV = 'production'

@@ -10,9 +10,9 @@ class PPISearchForm(FlaskForm):
 
 
 class PPIUtils:
-    @staticmethod
-    def error_handler(e):
-        return render_template("error.html", code=e)
+    # @staticmethod
+    # def error_handler(e):
+    #     return render_template("error.html", code=e)
     def create_filter_dict(self, form_dict, request_args):
         filter_dict = {}
         for key in request_args.keys():
